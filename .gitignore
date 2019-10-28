@@ -1,0 +1,3 @@
+config/sonarqube/data/es6
+config/sonarqube/data/sonar.h2.db
+config/sonarqube/data/web
