@@ -2,6 +2,7 @@
 # Ahab project (The guy versus Moby Dick)
 
 Experimental Docker swarm project by Giovanni Giorgi.
+The project is able to create a complex stack with sonarqube and grafana monitoring included.
 
 # Stealed from
 

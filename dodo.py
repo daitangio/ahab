@@ -5,16 +5,12 @@ from doit.tools import result_dep
 
 DOIT_CONFIG = {'default_tasks': []}
 
-SERVICE_NAME="pingerX"
-
-def task_usage():
-    def usage():
-        print("Ahab builder v1.0 run doit help for full task list")
-    return { 'actions': [usage], 'verbosity': 2}
+SERVICE_NAME="spike1"
 
 def _generate_env():
     """ 
-        See https://github.com/pydoit/doit/issues/171 for CmdAction
+        See https://github.com/pydoit/doit/issues/171 for CmdAction anvironment usage
+        To get it working right, you need to copy the current environment or nothing will work right
     """
     S=doit.get_initial_workdir() +"/config/sonarqube"    
     my_env=os.environ.copy()
@@ -22,6 +18,7 @@ def _generate_env():
     my_env['S']=S
     return my_env
 
+# Bug executed every time
 def task_make_grafana_preconf_volume():
     GRAFANA_BUILD=doit.get_initial_workdir()+"/config/grafana_build"
     return {
@@ -58,6 +55,7 @@ def task_run_service():
         #'uptodate': [False ],
         'file_dep':  [ 'images/pinger.tar',  'slow-pinger-deploy.yml' ],
         'actions':[
+            CmdAction('env',env=_generate_env()),
             CmdAction('docker stack up --compose-file slow-pinger-deploy.yml '+SERVICE_NAME,
             env=_generate_env()),
 	        'docker stack services '+SERVICE_NAME,
@@ -67,6 +65,9 @@ def task_run_service():
     }
 
 def task_all():
+    """
+    Build the complete service stack
+    """
     return {'actions': None,
             'task_dep': ['make_pinger_image', 'run_service', 'status']}
 
@@ -94,4 +95,14 @@ def task_clean_all():
         ],
         'verbosity': 2
         
+    }
+def task_clean_volume_too():
+    """
+    !DANGEROUS! Remove persistent volumes.
+    Use after clean_all
+    """
+    return {
+        'actions':[
+            "docker volume rm -f %s_grafana-storage %s_influxdb" %(SERVICE_NAME, SERVICE_NAME)
+        ]
     }

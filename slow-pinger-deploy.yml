@@ -2,23 +2,21 @@ version: '3.3'
 services:
   # See https://docs.docker.com/engine/swarm/stack-deploy/
   # for a complete swarm deploy demo
-
-  slow_ping:
-    #container_name: slow_ping
-    build:
-      context: .
-      dockerfile: ./slow_ping/Dockerfile
-      # See https://docs.docker.com/compose/compose-file/#args
-      args:
-        PING_HOST: "$PING_HOST"        
-    image: slow-ping:latest
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          # 0.001 too slow
-          cpus: "0.010"
-          memory: 512M
+  # slow_ping:
+  #   build:
+  #     context: .
+  #     dockerfile: ./slow_ping/Dockerfile
+  #     # See https://docs.docker.com/compose/compose-file/#args
+  #     args:
+  #       PING_HOST: "$PING_HOST"        
+  #   image: slow-ping:latest
+  #   deploy:
+  #     replicas: 1
+  #     resources:
+  #       limits:
+  #         # 0.001 too slow
+  #         cpus: "0.010"
+  #         memory: 512M
   sonar:
     container_name: sonar7
     image: sonarqube:7.9.1-community
@@ -29,21 +27,12 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: "0.90"
+          cpus: "1.5"
           memory: 2048M
     volumes:
       - "$S/conf:/opt/sonarqube/conf"      
       - "$S/extensions:/opt/sonarqube/extensions"
-      - "$S/data:/opt/sonarqube/data"             
-  # visualizer:
-  #   image: dockersamples/visualizer:stable
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - "/var/run/docker.sock:/var/run/docker.sock"
-  #   deploy:
-  #     placement:
-  #       constraints: [node.role == manager]
+      - "$S/data:/opt/sonarqube/data"
   telegraf:
     image: telegraf:1.3
     networks:
@@ -57,6 +46,9 @@ services:
       restart_policy:
         condition: on-failure
       mode: global
+      resources:
+        limits:
+          cpus: "0.5"          
   influxdb:
     image: influxdb:1.2
     networks:
