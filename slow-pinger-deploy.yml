@@ -2,6 +2,7 @@ version: '3.3'
 services:
   # See https://docs.docker.com/engine/swarm/stack-deploy/
   # for a complete swarm deploy demo
+
   slow_ping:
     #container_name: slow_ping
     build:
@@ -96,7 +97,6 @@ services:
 configs:
   telegraf-config:
     file: $PWD/config/telegraf/telegraf.conf
-
 networks:
   tig-net:
     driver: overlay

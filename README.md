@@ -12,8 +12,6 @@ https://docs.docker.com/compose/compose-file/#volume-configuration-reference
 
 
 
-
-# MAKE LIKE
-https://github.com/sphinx-doc/sphinx/issues/3196
-Eval:
+# Development
+For building read the doit documentation at
 https://pydoit.org/

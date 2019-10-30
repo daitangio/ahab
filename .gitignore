@@ -1,3 +1,13 @@
 config/sonarqube/data/es6
 config/sonarqube/data/sonar.h2.db
+config/sonarqube/data/sonar.lock.db
 config/sonarqube/data/web
+venv/*
+images/*.tar
+__pycache__/*
+
+.vscode/*
+
+
+# Doit database
+.doit.db*
