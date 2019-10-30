@@ -5,7 +5,7 @@ from doit.tools import result_dep
 
 DOIT_CONFIG = {'default_tasks': []}
 
-SERVICE_NAME="pinger2"
+SERVICE_NAME="pingerX"
 
 def task_usage():
     def usage():
@@ -22,10 +22,24 @@ def _generate_env():
     my_env['S']=S
     return my_env
 
+def task_make_grafana_preconf_volume():
+    GRAFANA_BUILD=doit.get_initial_workdir()+"/config/grafana_build"
+    return {
+        'actions': [
+            "docker volume create %s_grafana-storage" % (SERVICE_NAME),
+            # id is 104,group is 107
+            "docker run --rm -v %s_grafana-storage:/data -v %s:/to_copy alpine cp /to_copy/grafana.db /data/grafana.db"  % (SERVICE_NAME, GRAFANA_BUILD),
+            "docker run --rm -v %s_grafana-storage:/data -v %s:/to_copy alpine chown 104:107  /data/grafana.db"  % (SERVICE_NAME, GRAFANA_BUILD),
+            "docker run --rm -v %s_grafana-storage:/data -v %s:/to_copy alpine ls -l /data/grafana.db"  % (SERVICE_NAME, GRAFANA_BUILD),
+
+        ], 
+        'verbosity': 2
+    }
+
 def task_make_pinger_image():
     #print(my_env)   
     return {
-
+        'task_dep': ['make_grafana_preconf_volume'],
         'targets':  [ 'images/pinger.tar'    ],
         'file_dep': [ 'slow_ping/Dockerfile' ],
         # %(dependencies)s -o %(targets)s
@@ -56,12 +70,14 @@ def task_all():
     return {'actions': None,
             'task_dep': ['make_pinger_image', 'run_service', 'status']}
 
+# run with --continue to overcome error on status launch
 def task_status():
     return {
         'uptodate': [False ],
         'actions':[
-            'docker service ps %s_slow_ping' % (SERVICE_NAME),
-            'docker service ps %s_influxdb'  % (SERVICE_NAME),            
+            'docker stack services %s ' % (SERVICE_NAME),
+            #'docker service ps %s_slow_ping' % (SERVICE_NAME),
+            #'docker service ps %s_influxdb'  % (SERVICE_NAME),            
         ],
         'verbosity': 2
     }
