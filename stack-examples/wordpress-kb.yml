@@ -13,6 +13,7 @@ services:
       WORDPRESS_DB_NAME: exampledb
     volumes:
       - $wordpress:/var/www/html
+      - $wordpress/../php-conf:/usr/local/etc/php
   db:
     image: mysql:5.7
     restart: always
