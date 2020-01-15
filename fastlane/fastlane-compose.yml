@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+    fastlane_build_machine:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+            args:
+                NODE_VERSION: 7.4.0    
+                FASTLANE_VERSION: 2.140.0    
+                BUNDLER_VERSION: 2.1.4
+        image: agos/fastlane
+        #container_name: agos_fastlane
