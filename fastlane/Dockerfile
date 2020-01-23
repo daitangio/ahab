@@ -1,25 +1,26 @@
 #FROM openjdk:8-stretch
-FROM circleci/ruby:2.4.5-node
+FROM circleci/ruby:2.4.5
 # GG Taken from 2017's https://github.com/yury-sannikov/android-fastlane-docker/blob/master/Dockerfile
 # and modernized
 LABEL maintainer "giovanni.giorgi@nttdata.com"
 
 # app volume is for fastlane develop
-RUN mkdir -p /app
+
 
 ARG FASTLANE_VERSION
 ARG BUNDLER_VERSION
 
 ENV XAR_VERSION "2.0.0"
 USER root
+RUN mkdir -p /app
 
 #GG Custom part for node 12 install
 RUN apt-get update -y && apt-get install -y  less
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
-RUN echo Node:$( /usr/bin/node --version --version)
+RUN node --version | grep 12 || ( echo "WRONG NODE VERSION: $(node --version)" ; exit 1000)
 # There is a "WRONG" node on /usr/local/bin/node "by hand"
-
+RUN echo  Node:$( node --version) Npm $( npm --version )
 RUN which node 
 
 # iTMSTransporter needs java installed
@@ -69,9 +70,18 @@ RUN gem install bundler --version "$BUNDLER_VERSION"
 # -V, --[no-]verbose
 RUN gem install fastlane -NV -v $FASTLANE_VERSION
 
+# NPM Upgrade here
+RUN npm install -g npm@6.13.6
 
 WORKDIR /app
 # Ruby ruby 2.4.5p335 (2018-10-18 revision 65137) [x86_64-linux] with Node v10.15.3 and npm 6.4.1
 # Ruby ruby 2.4.5p335 (2018-10-18 revision 65137) [x86_64-linux] with Node v10.15.3 and npm 6.4.1 and Ruby Bundler Bundler version 2.1.4
 RUN echo Fastlane: $(fastlane --version ) 
 RUN echo Ruby $(ruby -v) with Node $(node -v ) and npm $(npm -v)  and Ruby Bundler $( bundler -v )
+
+# JDK 8 install
+# **Stole openjdk docker build if you dare:
+# https://github.com/docker-library/openjdk/blob/master/8/jdk/Dockerfile
+RUN apt-get install -y default-jdk
+RUN echo java $( java -version )
+# ReactNative test
