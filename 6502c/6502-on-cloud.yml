@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+    6502_cloud_build_machine:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+            args:
+                6502C_VERSION: 1.0.0                    
+        image: daitangio/6502_cloud
+        #container_name: agos_6502_cloud

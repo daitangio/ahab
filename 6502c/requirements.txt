@@ -1,0 +1,10 @@
+Click==7.0
+dnspython==1.16.0
+email-validator==1.0.5
+fastapi==0.42.0
+h11==0.8.1
+idna==2.8
+pydantic==0.32.2
+starlette==0.12.9
+uvicorn==0.9.1
+websockets==8.0.2
